@@ -12,7 +12,7 @@
 This project requires Python 3.11.9. To get started, once you've cloned this repository, navigate to the root folower, create a virtual environment and install the requirements:
 
 ```
-conda env create -f environment.yaml
+CONDA_SUBDIR=osx-arm64 conda env create -f environment.yaml
 ```
 
 If the command finishes without error, a virtual environment called ```audio_mlx``` will be created. Start the virtual environment by running:

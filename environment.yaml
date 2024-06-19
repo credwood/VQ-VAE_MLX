@@ -2,9 +2,10 @@
 name: audio_mlx
 channels:
   - conda-forge
+variables:
+  CONDA_SUBDIR: osx-arm64
 dependencies:
   - python==3.11.9
   - pip
-  - mlx
   - pip:
     - -r requirements.txt
