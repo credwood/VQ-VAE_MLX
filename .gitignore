@@ -1,0 +1,7 @@
+__pycache__
+model/__pycache__
+test.ipynb
+saved_models
+audio_samples
+train_log.log
+.DS_Store

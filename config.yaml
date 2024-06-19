@@ -1,0 +1,58 @@
+data:
+  data_location: "dummy_data"
+  chunk_duration: 5.0
+  stem: "drums"
+  num_processes: 1
+
+model:
+  convvq:
+    channels: &channels 2
+    normalize: False
+    overlap: 0.01
+    name: 'convvq'
+  encoder:
+    channels: *channels
+    dimension: &dimension 64
+    n_filters: &n_filters 4
+    n_residual_layers: &n_residual_layers 1
+    ratios: &ratios [8, 5, 4, 2]
+    elu_alpha: &elu_alpha 1
+    kernel_size: &kernel_size 7
+    last_kernel_size: &last_kernel_size 7
+    residual_kernel_size: &residual_kernel_size 3
+    dilation_base: &dilation_base 2
+    compress: &compress 2
+  decoder:
+    channels: *channels
+    dimension: *dimension
+    n_filters: *n_filters
+    n_residual_layers: *n_residual_layers
+    ratios: *ratios
+    elu_alpha: *elu_alpha
+    kernel_size: *kernel_size
+    last_kernel_size: *last_kernel_size
+    residual_kernel_size: *residual_kernel_size
+    dilation_base: *dilation_base
+    compress: *compress
+  quantizer:
+    dimension: *dimension
+    n_q: 1
+    q_dropout: False
+    bins: 1024
+    decay: 0.99
+    kmeans_init: False
+    kmeans_iters: 10
+    threshold_ema_dead_code: 2
+    orthogonal_reg_weight: 0.0
+    orthogonal_reg_active_codes_only: False
+train:
+  lr: 3e-4
+  batch_size: 2
+  test_batch_size: 2
+  seed: 0
+  num_iters: 1000
+  save_dir: "saved_models"
+  train_log: "train_log.log"
+  eval_iters: 250
+  checkpoint: 250
+  sample_audio: "sample_audio"
