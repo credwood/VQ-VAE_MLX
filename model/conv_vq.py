@@ -58,8 +58,8 @@ class ConvVQ(nn.Module):
         self.qt_loss = mx.zeros((1))
         self.encoder_loss = mx.zeros((1))
         self.temporary_loss = []
-        self.emb_for_loss = None
-        self.decoded_for_vae_loss = None
+        self.emb_for_loss = mx.zeros((1))
+        self.decoded_for_vae_loss = mx.zeros((1))
 
         self.bits_per_codebook = int(math.log2(self.quantizer.bins))
         assert 2 ** self.bits_per_codebook == self.quantizer.bins, \

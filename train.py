@@ -89,7 +89,7 @@ def main(args):
         return spect_loss #+ enc_quant_loss[0] + 0.2*qt_loss
     
     
-    @partial(mx.compile, inputs=state, outputs=state)
+    #@partial(mx.compile, inputs=state, outputs=state)
     def step(X):
         loss_and_grad_fn = nn.value_and_grad(model, loss_fn)
         loss, grads = loss_and_grad_fn(model, X)

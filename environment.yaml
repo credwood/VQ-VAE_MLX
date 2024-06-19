@@ -1,11 +1,9 @@
 # environment.yaml
-
 name: audio_mlx
 channels:
   - conda-forge
 dependencies:
-  - python>=3.11.9
-  - anaconda
+  - python==3.11.9
   - pip
   - mlx
   - pip:
