@@ -54,12 +54,12 @@ class ConvVQ(nn.Module):
         self.overlap = overlap
         self.frame_rate = math.ceil(self.sample_rate / np.prod(self.encoder.ratios))
         self.name = name
-        self.qt_vals = []
-        self.qt_loss = mx.zeros((1))
-        self.encoder_loss = mx.zeros((1))
-        self.temporary_loss = []
-        self.emb_for_loss = mx.zeros((1))
-        self.decoded_for_vae_loss = mx.zeros((1))
+        self._qt_vals = []
+        self._qt_loss = mx.zeros((1))
+        self._encoder_loss = mx.zeros((1))
+        self._temporary_loss = []
+        self._emb_for_loss = mx.zeros((1))
+        self._decoded_for_vae_loss = mx.zeros((1))
 
         self.bits_per_codebook = int(math.log2(self.quantizer.bins))
         assert 2 ** self.bits_per_codebook == self.quantizer.bins, \
@@ -91,7 +91,7 @@ class ConvVQ(nn.Module):
         assert channels > 0 and channels <= 2
         if self.training:
             vae_emb = self.encoder(x)
-            self.decoded_for_vae_loss = self.decoder(vae_emb)[:, :x.shape[1], :]
+            self._decoded_for_vae_loss = self.decoder(vae_emb)[:, :x.shape[1], :]
             
         segment_length = self.segment_length
         if segment_length is None:
@@ -106,7 +106,7 @@ class ConvVQ(nn.Module):
             frame = x[:, offset: offset + segment_length, :]
             encoded_frames.append(self._encode_frame(frame))
         if self.training:
-            self.qt_loss = mx.array(sum(self.qt_vals)/len(self.qt_vals))
+            self._qt_loss = mx.array(sum(self._qt_vals)/len(self._qt_vals))
             
         return encoded_frames
 
@@ -128,8 +128,8 @@ class ConvVQ(nn.Module):
         if self.training:
             quantized_results = self.quantizer(emb, frame_rate=self.frame_rate)
             codes = quantized_results.codes
-            self.qt_vals.append(quantized_results.penalty)
-            self.emb_for_loss = emb
+            self._qt_vals.append(quantized_results.penalty)
+            self._emb_for_loss = emb
             
         else:
             codes = self.quantizer.encode(emb)
@@ -147,8 +147,8 @@ class ConvVQ(nn.Module):
 
         frames = [self._decode_frame(frame) for frame in encoded_frames]
         if self.training:
-            self.encoder_loss = mx.stop_gradient(mx.array(sum(self.temporary_loss)/len(self.temporary_loss)))
-            self.temporary_loss = []
+            self._encoder_loss = mx.stop_gradient(mx.array(sum(self._temporary_loss)/len(self._temporary_loss)))
+            self._temporary_loss = []
         return frames
 
     def _decode_frame(self, encoded_frame: EncodedFrame) -> mx.array:
@@ -156,8 +156,8 @@ class ConvVQ(nn.Module):
         emb = self.quantizer.decode(codes)
         if self.training:
             emb = mx.stop_gradient(emb)
-            emb_frame_loss = losses.mse_loss(emb, self.emb_for_loss)
-            self.temporary_loss.append(emb_frame_loss)
+            emb_frame_loss = losses.mse_loss(emb, self._emb_for_loss)
+            self._temporary_loss.append(emb_frame_loss)
 
         out = self.decoder(emb)
         if scale is not None:

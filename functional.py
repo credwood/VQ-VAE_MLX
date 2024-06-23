@@ -30,23 +30,14 @@ def custom_batched_embedding(input_indices, batched_weight_matrix):
         mx.array: Embedding output with shape (*input_indices.shape, embedding_dim).
     """
     
-    # Get the batch size and embedding dimension
     batch_size, embedding_dim = input_indices.shape[0], batched_weight_matrix.shape[-1]
-    
-    # Get the shape of the input indices
     input_shape = input_indices.shape
-        
-    # Flatten the input indices to 1D for easier indexing
     flattened_indices = input_indices.reshape(batch_size, -1)
-    
-    # Prepare an empty array to hold the embeddings
     embeddings = mx.zeros((batch_size, flattened_indices.shape[1], embedding_dim))
     
-    # Perform the lookup for each batch separately
     for i in range(batch_size):
         embeddings[i] = batched_weight_matrix[flattened_indices[i]]
     
-    # Reshape the embeddings to match the required output shape
     output_shape = (*input_shape, embedding_dim)
     embeddings = embeddings.reshape(output_shape)
     

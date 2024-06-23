@@ -83,12 +83,11 @@ def main(args):
     def loss_fn(model: ConvVQ, x: mx.array):
         y = model(x)
         spect_loss = multispec_loss(x, y)
-        #vae_spect_loss = multispec_loss(x, model.decoded_for_vae_loss)
-        #qt_loss = model.qt_loss
-        #enc_quant_loss = model.encoder_loss
+        #vae_spect_loss = multispec_loss(x, model._decoded_for_vae_loss)
+        #qt_loss = model._qt_loss
+        #enc_quant_loss = model._encoder_loss
         return spect_loss #+ enc_quant_loss[0] + 0.2*qt_loss
-    
-    
+        
     #@partial(mx.compile, inputs=state, outputs=state)
     def step(X):
         loss_and_grad_fn = nn.value_and_grad(model, loss_fn)
@@ -118,12 +117,13 @@ def main(args):
         throughput_toc = time.perf_counter()
         throughput_acc += batch.shape[0] / (throughput_toc - throughput_tic)
         loss_acc += loss.item()
-        logger.info(f"qt_loss for iteration {num_iters}: {sum(model.qt_loss)/len(model.qt_loss)}")
+        #logger.info(f"qt_loss for iteration {num_iters}: {sum(model._qt_loss)/len(model._qt_loss)}")
         logger.info(f"full loss for iteration {num_iters}: {loss.item()}")
-        logger.info(f"vae losses: {num_iters}: {loss-0.2*sum(model.qt_loss)/len(model.qt_loss)}")
-        logger.info(f"accumulated loss for iteration {num_iters}: {loss_acc}")
+        #logger.info(f"vae losses: {num_iters}: {loss-0.2*sum(model._qt_loss)/len(model._qt_loss)}")
+        #logger.info(f"accumulated loss for iteration {num_iters}: {loss_acc}")
 
-        model.qt_loss = []
+        model._qt_loss = []
+        model._qt_vals = []
 
         toc = time.perf_counter()
         logger.info(f"iteration time: {toc-tic:8.2f} (s)")
