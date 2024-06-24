@@ -83,10 +83,9 @@ def main(args):
     def loss_fn(model: ConvVQ, x: mx.array):
         y = model(x)
         spect_loss = multispec_loss(x, y)
-        vae_spect_loss = multispec_loss(x, model._decoded_for_vae_loss)
-        qt_loss = model._qt_loss
+        #qt_loss = model._qt_loss
         enc_quant_loss = model._encoder_loss
-        return spect_loss + enc_quant_loss[0] + vae_spect_loss #+ 0.2*qt_loss
+        return spect_loss + enc_quant_loss[0] #+ 0.2*qt_loss
         
     @partial(mx.compile, inputs=state, outputs=state)
     def step(X):

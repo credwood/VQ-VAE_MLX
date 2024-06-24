@@ -1,8 +1,8 @@
 data:
-  data_location: "dummy_data"
+  data_location: "~/Desktop/musdb18hq"
   chunk_duration: 5.0
   stem: "drums"
-  num_processes: 1
+  num_processes: 4
 
 model:
   convvq:
@@ -12,9 +12,9 @@ model:
     name: 'convvq'
   encoder:
     channels: *channels
-    dimension: &dimension 64
+    dimension: &dimension 128
     n_filters: &n_filters 4
-    n_residual_layers: &n_residual_layers 1
+    n_residual_layers: &n_residual_layers 2
     ratios: &ratios [8, 5, 4, 2]
     elu_alpha: &elu_alpha 1
     kernel_size: &kernel_size 7
@@ -50,7 +50,7 @@ train:
   batch_size: 2
   test_batch_size: 2
   seed: 0
-  num_iters: 1000
+  num_iters: 10000
   save_dir: "saved_models"
   train_log: "train_log.log"
   eval_iters: 250

@@ -59,7 +59,6 @@ class ConvVQ(nn.Module):
         self._encoder_loss = mx.zeros((1))
         self._temporary_loss = []
         self._emb_for_loss = mx.zeros((1))
-        self._decoded_for_vae_loss = mx.zeros((1))
 
         self.bits_per_codebook = int(math.log2(self.quantizer.bins))
         assert 2 ** self.bits_per_codebook == self.quantizer.bins, \
@@ -89,10 +88,7 @@ class ConvVQ(nn.Module):
         assert len(x.shape) == 3
         _, length, channels  = x.shape
         assert channels > 0 and channels <= 2
-        if self.training:
-            vae_emb = self.encoder(x)
-            self._decoded_for_vae_loss = self.decoder(vae_emb)[:, :x.shape[1], :]
-            
+  
         segment_length = self.segment_length
         if segment_length is None:
             segment_length = length
