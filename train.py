@@ -83,12 +83,12 @@ def main(args):
     def loss_fn(model: ConvVQ, x: mx.array):
         y = model(x)
         spect_loss = multispec_loss(x, y)
-        #vae_spect_loss = multispec_loss(x, model._decoded_for_vae_loss)
-        #qt_loss = model._qt_loss
-        #enc_quant_loss = model._encoder_loss
-        return spect_loss #+ enc_quant_loss[0] + 0.2*qt_loss
+        vae_spect_loss = multispec_loss(x, model._decoded_for_vae_loss)
+        qt_loss = model._qt_loss
+        enc_quant_loss = model._encoder_loss
+        return spect_loss + enc_quant_loss[0] + vae_spect_loss #+ 0.2*qt_loss
         
-    #@partial(mx.compile, inputs=state, outputs=state)
+    @partial(mx.compile, inputs=state, outputs=state)
     def step(X):
         loss_and_grad_fn = nn.value_and_grad(model, loss_fn)
         loss, grads = loss_and_grad_fn(model, X)
@@ -132,8 +132,7 @@ def main(args):
             print(
                 "| ".join(
                     [
-                        f"Loss {(loss_acc / num_iters):10.2f}",
-                        f"Throughput {(throughput_acc / num_iters):8.2f} im/s",
+                        f"Loss {(loss_acc):10.4f}",
                         f"Iteration {num_iters:5d}",
                         f"Iteration time: {toc-tic:8.2f} (s)"
                     ]
