@@ -64,7 +64,7 @@ class ConvBlock(nn.Module):
         self.block = nn.Sequential(*block)
 
     def __call__(self, x):
-        return self.block(x)
+        return x + self.block(x)
 
 
 class ConvEncoder(nn.Module):
